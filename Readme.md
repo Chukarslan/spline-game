@@ -10,12 +10,12 @@ The Driving Aptitude Test Game is a simulation-based game inspired by the Spanis
 ### Features
 
 Dual Simulations: The game features two side-by-side simulations, each with its own curved path and controllable ball. The player can control one ball using the WASD keys and the other ball using the arrow keys.
-Dynamic Curvature: The curvature of the path changes dynamically over time, creating an unpredictable and exciting gameplay experience.
+Dynamic Curvature: The curvature of the path changes dynamically over time, creating an unpredictable path for the user to try and keep the ball within.
 Transition Effects: The transition from one curvature to another is smooth and gradual, offering a visually pleasing experience.
 Out of Bounds Alert: An out-of-bounds alert is triggered when the player's ball goes beyond the permissible area. This is indicated by a sound alert and is accompanied by a visual indication.
-Reset Option: A reset button allows players to reset the game at any time.
+Reset Option: A reset button allows players to reset the ball's position at any time.
 Interactive Interface: The game features an intuitive interface with real-time information about frequency, amplitude, and controls.
-High FPS: The game is designed to run at a high frame rate, providing a smooth and responsive experience.
+High FPS: The game is has been optimised to run at a high frame rate using numpy for pixel array computation, providing a smooth and responsive experience.
 Future Plans
 Joystick Support: We plan to add compatibility for joystick support, allowing players to use game controllers for a more immersive experience.
 Mobile App: We aim to develop a mobile application version of the game, making it accessible to a wider audience. The app will be available on both the Apple App Store and Google Play Store.
