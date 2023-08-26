@@ -1,0 +1,172 @@
+import pygame
+import numpy as np
+import random
+
+pygame.init()
+
+# Initialize screen
+screen_width = 1600
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Dual Sine Curved Line Games")
+
+font = pygame.font.Font(None, 36)  # Font for displaying text
+
+clock = pygame.time.Clock()
+
+# Initialize game parameters
+initial_frequency_range = [0.0003, 0.0002]
+initial_amplitude_range = [100, 150]
+transition_duration = 10000  # 10 seconds in milliseconds
+ball_speed = 5
+
+start_frequency1 = 0.0002
+start_frequency2 = 0.0003
+
+start_amplitude1 = 100
+start_amplitude2 = 150
+
+# Line parameters
+line_color = (255, 0, 0)
+line_thickness = 150
+
+# Initialize game 1 variables
+ball1_radius = 20
+ball1_x = screen_width // 4
+ball1_y = screen_height // 2
+curvature_frequency1 = random.uniform(*initial_frequency_range)
+curvature_amplitude1 = random.uniform(*initial_amplitude_range)
+next_change_time1 = pygame.time.get_ticks() + transition_duration
+transition_start_time1 = 0
+
+# Initialize game 2 variables
+ball2_radius = 20
+ball2_x = 3 * screen_width // 4
+ball2_y = screen_height // 2
+curvature_frequency2 = random.uniform(*initial_frequency_range)
+curvature_amplitude2 = random.uniform(*initial_amplitude_range)
+next_change_time2 = pygame.time.get_ticks() + transition_duration
+transition_start_time2 = 0
+
+def interpolate(a, b, t):
+    return a + (b - a) * t
+
+out_of_bounds = False  # To track if the ball is out of bounds
+
+crash_sound = pygame.mixer.Sound("alarm.wav") # Crash sound
+
+out_of_bounds_sound_playing = False  # To track if the out of bounds sound is playing
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+    keys = pygame.key.get_pressed()
+    
+    # Handle game 1 ball movement
+    if keys[pygame.K_a]:
+        ball1_x -= ball_speed
+    if keys[pygame.K_d]:
+        ball1_x += ball_speed
+    if keys[pygame.K_w]:
+        ball1_y -= ball_speed
+    if keys[pygame.K_s]:
+        ball1_y += ball_speed
+
+    # Handle game 2 ball movement
+    if keys[pygame.K_LEFT]:
+        ball2_x -= ball_speed
+    if keys[pygame.K_RIGHT]:
+        ball2_x += ball_speed
+    if keys[pygame.K_UP]:
+        ball2_y -= ball_speed
+    if keys[pygame.K_DOWN]:
+        ball2_y += ball_speed
+
+    current_time = pygame.time.get_ticks()
+
+    # Update game 1 curvature parameters
+    if current_time >= next_change_time1:
+        start_frequency1 = curvature_frequency1
+        start_amplitude1 = curvature_amplitude1
+
+        curvature_frequency1 = random.uniform(*initial_frequency_range)
+        curvature_amplitude1 = random.uniform(*initial_amplitude_range)
+
+        transition_start_time1 = current_time
+        next_change_time1 = current_time + transition_duration
+
+    # Update game 2 curvature parameters
+    if current_time >= next_change_time2:
+        start_frequency2 = curvature_frequency2
+        start_amplitude2 = curvature_amplitude2
+
+        curvature_frequency2 = random.uniform(*initial_frequency_range)
+        curvature_amplitude2 = random.uniform(*initial_amplitude_range)
+
+        transition_start_time2 = current_time
+        next_change_time2 = current_time + transition_duration
+
+    # Calculate the transition progress (0 to 1)
+    transition_progress1 = (current_time - transition_start_time1) / transition_duration
+    transition_progress1 = np.clip(transition_progress1, 0, 1)
+
+    transition_progress2 = (current_time - transition_start_time2) / transition_duration
+    transition_progress2 = np.clip(transition_progress2, 0, 1)
+
+    # Clear the screen
+    screen.fill((0, 0, 0))
+
+    # Create pixel arrays to manipulate
+    pixel_array = pygame.surfarray.pixels3d(screen)
+
+    # Draw the moving sine curved lines for both games
+    y_range = np.arange(screen_height)
+    
+    phase1 = current_time * interpolate(start_frequency1, curvature_frequency1, transition_progress1)
+    x_offset1 = interpolate(start_amplitude1, curvature_amplitude1, transition_progress1) * np.sin(
+        interpolate(start_frequency1, curvature_frequency1, transition_progress1) * y_range - phase1)
+    x_center1 = screen_width // 4 + x_offset1.astype(int)
+    
+    phase2 = current_time * interpolate(start_frequency2, curvature_frequency2, transition_progress2)
+    x_offset2 = interpolate(start_amplitude2, curvature_amplitude2, transition_progress2) * np.sin(
+        interpolate(start_frequency2, curvature_frequency2, transition_progress2) * y_range - phase2)
+    x_center2 = 3 * screen_width // 4 + x_offset2.astype(int)
+    
+    x_indices1 = np.clip(x_center1 + np.arange(-line_thickness // 2, line_thickness // 2 + 1)[:, np.newaxis], 0, screen_width - 1)
+    x_indices2 = np.clip(x_center2 + np.arange(-line_thickness // 2, line_thickness // 2 + 1)[:, np.newaxis], 0, screen_width - 1)
+    
+    pixel_array[x_indices1, y_range] = line_color
+    pixel_array[x_indices2, y_range] = line_color
+
+    # Release the pixel array
+    del pixel_array
+
+    # Draw the balls for both games
+    pygame.draw.circle(screen, (255, 255, 255), (ball1_x, ball1_y), ball1_radius)
+    pygame.draw.circle(screen, (255, 255, 255), (ball2_x, ball2_y), ball2_radius)
+
+    # Check if the ball is within the red path
+    ball_offset1 = np.abs(ball1_x - x_center1[ball1_y])
+    out_of_bounds1 = ball_offset1 > 4 * ball1_radius
+
+    ball_offset2 = np.abs(ball2_x - x_center2[ball2_y])
+    out_of_bounds2 = ball_offset2 > 4 * ball2_radius
+
+    if out_of_bounds1 or out_of_bounds2:
+            if not out_of_bounds_sound_playing:
+                # Start playing the crash sound
+                pygame.mixer.Sound.play(crash_sound)
+                out_of_bounds_sound_playing = True
+            else:
+                if out_of_bounds_sound_playing:
+                    # Stop playing the crash sound
+                    pygame.mixer.Sound.stop(crash_sound)
+                    out_of_bounds_sound_playing = False
+
+    
+
+    pygame.display.flip()
+    clock.tick(60)
