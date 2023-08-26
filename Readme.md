@@ -1,5 +1,4 @@
-## Driving Aptitude Test Game
-`v 0.1`
+## Driving Aptitude Test Game `v 0.1`
 
 ![Game Screenshot](.assets/screenshot.PNG)
 
