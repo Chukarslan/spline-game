@@ -1,5 +1,5 @@
 ## Driving Aptitude Test Game
-v0.1
+`v 0.1`
 
 ![Game Screenshot](.assets/screenshot.PNG)
 
@@ -23,12 +23,12 @@ Mobile App: We aim to develop a mobile application version of the game, making i
 
 ### Installation and Usage
 Clone this repository to your local machine.
-Ensure you install the relevant packages by running pip install -r requirements.txt in the dir.
+Ensure you install the relevant packages by running `pip install -r requirements.txt` in the dir.
 Run the game by executing python game-single.py.
-Alternatively, experiment with and improve ./experiments/game-multiple-exp.py
+Alternatively, experiment with and improve `./experiments/game-multiple-exp.py`
 
 ### Credits
-This game was developed by Arslan Badr and Santiago Quintana-Amate as a fun and challenging simulation-based game with the practival useability.
+This game was developed by Arslan Badr and Santiago Quintana-Amate as a fun and challenging simulation-based game with the practical useability.
 
 ### DISCLAIMER
 This is in no way endored by any government / enforcement authority and is solely meant for practice of the actual test, use at your own risk.
