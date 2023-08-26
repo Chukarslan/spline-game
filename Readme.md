@@ -1,7 +1,7 @@
 ## Driving Aptitude Test Game
 v0.1
 
-![Game Screenshot](.assets/screenshot.png)
+![Game Screenshot](.assets/screenshot.PNG)
 
 
 ### Overview
